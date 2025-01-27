@@ -13,6 +13,7 @@
 ;; Define constants for error handling
 (define-constant ERR_CARGO_NOT_FOUND (err u100))
 (define-constant ERR_NOT_OWNER (err u101))
+(define-constant ERR_INVALID_INPUT (err u102))
 
 ;; Add a new cargo
 (define-public (add-cargo (description (string-ascii 100)))
@@ -20,6 +21,7 @@
     (
       (cargo-id (var-get cargo-count))
     )
+    (asserts! (> (len description) u0) ERR_INVALID_INPUT)
     (map-set cargos
       {id: cargo-id}
       {
@@ -39,6 +41,7 @@
     (
       (cargo (map-get? cargos {id: cargo-id}))
     )
+    (asserts! (< cargo-id (var-get cargo-count)) ERR_INVALID_INPUT)
     (match cargo
       cargo-data
         (if (is-eq (get owner cargo-data) tx-sender)
